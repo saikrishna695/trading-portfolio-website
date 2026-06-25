@@ -55,9 +55,11 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <Button asChild size="sm" className="ml-2">
-            <a href="#accounts">View My Results</a>
-          </Button>
+          <Button
+            size="sm"
+            className="ml-2"
+            render={<a href="#accounts">View My Results</a>}
+          />
         </div>
 
         <Button
@@ -85,11 +87,14 @@ export function Navbar() {
                 {link.label}
               </a>
             ))}
-            <Button asChild className="my-2">
-              <a href="#accounts" onClick={() => setOpen(false)}>
-                View My Results
-              </a>
-            </Button>
+            <Button
+              className="my-2"
+              render={
+                <a href="#accounts" onClick={() => setOpen(false)}>
+                  View My Results
+                </a>
+              }
+            />
           </div>
         </div>
       ) : null}

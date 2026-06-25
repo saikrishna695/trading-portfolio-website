@@ -56,17 +56,17 @@ export function Hero() {
         </Reveal>
         <Reveal delay={260}>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <a href="#accounts">
-                View My Results
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </a>
+            <Button size="lg" render={<a href="#accounts" />}>
+              View My Results
+              <ArrowRight className="size-4" aria-hidden="true" />
             </Button>
-            <Button asChild size="lg" variant="outline">
-              <a href="#journal">
-                <BookOpen className="size-4" aria-hidden="true" />
-                Read the Journal
-              </a>
+            <Button
+              size="lg"
+              variant="outline"
+              render={<a href="#journal" />}
+            >
+              <BookOpen className="size-4" aria-hidden="true" />
+              Read the Journal
             </Button>
           </div>
         </Reveal>
