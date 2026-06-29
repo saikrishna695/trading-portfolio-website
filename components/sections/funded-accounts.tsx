@@ -1,20 +1,13 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { FileText, Plus, Upload } from 'lucide-react'
+import { FileText, Plus, Trash2, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -48,21 +41,17 @@ function formatDate(iso: string) {
 }
 
 export function FundedAccounts() {
-  const { accounts } = usePortfolio()
+  const { accounts, isAdmin, deleteAccount } = usePortfolio()
   const [filter, setFilter] = useState<FilterKey>('all')
   const [preview, setPreview] = useState<FundedAccount | null>(null)
 
   const filtered = useMemo(
-    () =>
-      accounts.filter((a) => (filter === 'all' ? true : a.type === filter)),
+    () => accounts.filter((a) => (filter === 'all' ? true : a.type === filter)),
     [accounts, filter],
   )
 
   return (
-    <section
-      id="accounts"
-      className="border-y border-border bg-secondary/40"
-    >
+    <section id="accounts" className="border-y border-border bg-secondary/40">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
@@ -112,18 +101,14 @@ export function FundedAccounts() {
                   >
                     <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                       {account.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={account.image || '/placeholder.svg'}
+                          src={account.image}
                           alt={`${account.firm} ${account.accountName} proof`}
                           className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         />
                       ) : (
                         <div className="flex size-full items-center justify-center">
-                          <FileText
-                            className="size-10 text-muted-foreground"
-                            aria-hidden="true"
-                          />
+                          <FileText className="size-10 text-muted-foreground" />
                         </div>
                       )}
                       <Badge
@@ -148,17 +133,27 @@ export function FundedAccounts() {
                           {account.accountName}
                         </p>
                       </div>
-                      {typeof account.amount === 'number' ? (
-                        <span className="font-heading text-lg font-semibold text-primary">
-                          {formatCurrency(account.amount)}
-                        </span>
-                      ) : null}
+                      <div className="flex items-center gap-2">
+                        {typeof account.amount === 'number' && (
+                          <span className="font-heading text-lg font-semibold text-primary">
+                            {formatCurrency(account.amount)}
+                          </span>
+                        )}
+                       <button
+                            type="button"
+                            onClick={() => deleteAccount(account.id)}
+                            className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            aria-label="Delete"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                      </div>
                     </div>
-                    {account.note ? (
+                    {account.note && (
                       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                         {account.note}
                       </p>
-                    ) : null}
+                    )}
                     <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       {formatDate(account.date)}
                     </p>
@@ -171,7 +166,7 @@ export function FundedAccounts() {
       </div>
 
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] p-4 m-0 rounded-none">
           <DialogHeader>
             <DialogTitle>
               {preview?.firm} — {preview?.accountName}
@@ -180,14 +175,14 @@ export function FundedAccounts() {
               {preview ? formatDate(preview.date) : ''}
             </DialogDescription>
           </DialogHeader>
-          {preview?.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
+         {preview?.image && (
             <img
-              src={preview.image || '/placeholder.svg'}
+              src={preview.image}
               alt={`${preview.firm} proof`}
-              className="w-full rounded-lg border border-border"
+              className="w-full h-full"
+              style={{ objectFit: 'contain', maxHeight: 'calc(100vh - 100px)' }}
             />
-          ) : null}
+          )}
         </DialogContent>
       </Dialog>
     </section>
@@ -223,7 +218,20 @@ function AddAccountDialog() {
     setFileName(file.name)
     if (file.type.startsWith('image/')) {
       const reader = new FileReader()
-      reader.onload = () => setImage(reader.result as string)
+      reader.onload = (event) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          const maxW = 1200
+          const scale = Math.min(1, maxW / img.width)
+          canvas.width = img.width * scale
+          canvas.height = img.height * scale
+          const ctx = canvas.getContext('2d')
+          ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
+          setImage(canvas.toDataURL('image/jpeg', 0.7))
+        }
+        img.src = event.target?.result as string
+      }
       reader.readAsDataURL(file)
     } else {
       setImage(undefined)
@@ -234,7 +242,7 @@ function AddAccountDialog() {
     e.preventDefault()
     addAccount({
       type,
-      firm: firm.trim() || 'Prop Firm',
+      firm: firm.trim() || 'Funded Firm',
       accountName: accountName.trim() || 'Account',
       date: date || new Date().toISOString().slice(0, 10),
       amount: amount ? Number(amount) : undefined,
@@ -246,16 +254,10 @@ function AddAccountDialog() {
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o)
-        if (!o) reset()
-      }}
-    >
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset() }}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <Plus className="size-4" aria-hidden="true" />
+          <Plus className="size-4" />
           Add proof
         </Button>
       </DialogTrigger>
@@ -279,18 +281,32 @@ function AddAccountDialog() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label>Type</Label>
-                <Select
-                  value={type}
-                  onValueChange={(v) => setType(v as AccountType)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="passing">Passing account</SelectItem>
-                    <SelectItem value="payout">Payout</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setType('passing')}
+                    className={cn(
+                      'flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+                      type === 'passing'
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    Passing Account
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setType('payout')}
+                    className={cn(
+                      'flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+                      type === 'payout'
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    Payout
+                  </button>
+                </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -299,7 +315,7 @@ function AddAccountDialog() {
                     id="firm"
                     value={firm}
                     onChange={(e) => setFirm(e.target.value)}
-                    placeholder="Apex Capital"
+                    placeholder="Funded Firm"
                   />
                 </div>
                 <div className="space-y-2">
@@ -308,7 +324,7 @@ function AddAccountDialog() {
                     id="accountName"
                     value={accountName}
                     onChange={(e) => setAccountName(e.target.value)}
-                    placeholder="100K Evaluation"
+                    placeholder="100K Account"
                   />
                 </div>
                 <div className="space-y-2">
@@ -327,7 +343,7 @@ function AddAccountDialog() {
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    placeholder="100000"
+                    placeholder="5000"
                   />
                 </div>
               </div>
@@ -347,7 +363,7 @@ function AddAccountDialog() {
                   htmlFor="acc-file"
                   className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-border bg-secondary/50 px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-secondary"
                 >
-                  <Upload className="size-4" aria-hidden="true" />
+                  <Upload className="size-4" />
                   {fileName || 'Choose a file to upload'}
                 </label>
                 <Input

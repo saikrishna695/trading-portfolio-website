@@ -71,21 +71,7 @@ export function Hero() {
           </div>
         </Reveal>
 
-        <Reveal delay={320}>
-          <dl className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-xl border border-border bg-card p-5"
-              >
-                <dt className="text-sm text-muted-foreground">{stat.label}</dt>
-                <dd className="mt-1 font-heading text-3xl font-semibold text-foreground">
-                  {stat.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
+        
       </div>
     </section>
   )

@@ -8,10 +8,9 @@ import { cn } from '@/lib/utils'
 const LINKS = [
   { href: '#about', label: 'About' },
   { href: '#accounts', label: 'Proof' },
-  { href: '#journal', label: 'Journal' },
   { href: '#stats', label: 'Stats' },
   { href: '#firms', label: 'Firms' },
-  { href: '#contact', label: 'Contact' },
+  
 ]
 
 export function Navbar() {

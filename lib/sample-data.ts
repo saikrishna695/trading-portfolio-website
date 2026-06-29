@@ -11,7 +11,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 export const PROFILE = {
-  name: 'Alex Morgan',
+  name: 'Sai Krishna',
   tagline: 'Consistently Funded. Disciplined Trader.',
   bio: 'Forex trader specializing in funded prop-firm accounts. Three years building a process-driven approach to the markets, with a focus on capital preservation and repeatable execution across major and minor pairs.',
   email: 'you@example.com',
@@ -24,7 +24,7 @@ export const PROFILE = {
 
 // Passcode that unlocks "admin mode" for adding entries and uploads.
 // EDIT ME: change this to your own passcode.
-export const ADMIN_PASSCODE = 'trader2025'
+export const ADMIN_PASSCODE = 'trader2026'
 
 export const SAMPLE_JOURNAL: JournalEntry[] = [
   {
@@ -115,16 +115,11 @@ export const SAMPLE_ACCOUNTS: FundedAccount[] = [
 ]
 
 export const SAMPLE_FIRMS: Firm[] = [
-  { id: 'f1', name: 'Apex Capital', status: 'Funded', datePassed: '2025-04-28' },
-  { id: 'f2', name: 'FundedNext', status: 'Passed', datePassed: '2025-03-15' },
-  { id: 'f3', name: 'The5ers', status: 'Active', datePassed: '2025-05-30' },
-  { id: 'f4', name: 'FTMO', status: 'Passed', datePassed: '2025-02-10' },
+  { id: 'f1', name: 'FundedFirm', status: 'Funded', datePassed: '2025-04-28' },
 ]
 
 export const SAMPLE_GOALS: Goal[] = [
-  { id: 'g1', label: 'Total funded capital', current: 100000, target: 250000, unit: '$' },
-  { id: 'g2', label: '2025 payout target', current: 4820, target: 25000, unit: '$' },
-  { id: 'g3', label: 'Trading days journaled', current: 5, target: 100, unit: '' },
+  { id: 'g2', label: 'payout target', current: 0, target: 100000, unit: '$' },
 ]
 
 export const SAMPLE_MILESTONES: Milestone[] = [
@@ -149,27 +144,23 @@ export const SAMPLE_MILESTONES: Milestone[] = [
 ]
 
 export const WATCHLIST = [
-  'EUR/USD',
-  'GBP/JPY',
-  'USD/JPY',
   'XAU/USD',
-  'GBP/USD',
-  'AUD/USD',
 ]
 
 export const RISK_RULES = [
-  { label: 'Risk per trade', value: '0.5 – 1.0%' },
+  { label: 'Risk per trade', value: '1%' },
   { label: 'Max daily loss', value: '3%' },
-  { label: 'Minimum reward:risk', value: '1 : 2' },
-  { label: 'Max open positions', value: '2' },
+  { label: 'Minimum reward:risk', value: '1 : 3' },
+  { label: 'Max open positions', value: '1' },
 ]
 
 export const TRADING_PLAN = [
-  'Trade only during the London and New York sessions.',
-  'No entries during high-impact news without a defined plan.',
-  'Every trade must have a pre-set stop loss and target.',
-  'Journal every trade the same day it is closed.',
-  'Stop trading for the day after hitting the daily loss limit.',
+  'Only trade in the direction of the prevailing trend.',
+  'Wait patiently for price to reach a key level before considering an entry.',
+  'Always enter on a pullback — never chase price.',
+  'Maximum two trades per day, no exceptions.',
+  'Avoid entries in the middle of a range or between key levels.',
+  'Stop trading immediately after hitting the daily loss limit.',
 ]
 
 export const RESOURCES = [
